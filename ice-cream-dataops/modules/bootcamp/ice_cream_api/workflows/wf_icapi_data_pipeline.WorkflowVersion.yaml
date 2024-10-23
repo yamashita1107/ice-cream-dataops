@@ -1,0 +1,80 @@
+workflowExternalId: wf_icapi_data_pipeline
+version: '1'
+workflowDefinition:
+  tasks:
+  #insert data to raw
+  - externalId: icapi_assets_extractor
+    type: function
+    parameters:
+      function:
+        externalId: icapi_assets_extractor
+        concurrencyPolicy: waitForCurrent
+    retries: 3
+    timeout: 3600
+    onFailure: abortWorkflow
+
+  #convert raw to assets
+  - externalId: create_asset_hierarchy
+    type: function
+    parameters:
+      function:
+        externalId: create_asset_hierarchy
+        concurrencyPolicy: waitForCurrent
+    retries: 3
+    timeout: 3600
+    onFailure: abortWorkflow
+    dependsOn:
+      - externalId: icapi_assets_extractor
+
+  #create timeseries after created assets
+  - externalId: icapi_timeseries_extractor
+    type: function
+    parameters:
+      function:
+        externalId: icapi_timeseries_extractor
+        concurrencyPolicy: waitForCurrent
+    retries: 3
+    timeout: 3600
+    onFailure: abortWorkflow
+    dependsOn:
+      - externalId: create_asset_hierarchy
+
+  #contextualize asset 
+  - externalId: icapi_ts_assets_contextualization
+    type: function
+    parameters:
+      function:
+        externalId: icapi_ts_assets_contextualization
+        concurrencyPolicy: waitForCurrent
+    retries: 3
+    timeout: 3600
+    onFailure: abortWorkflow
+    dependsOn:
+      - externalId: icapi_timeseries_extractor
+
+  #insert datapoint to timseseries after created timeseries
+  - externalId: icapi_datapoints_extractor
+    type: function
+    parameters:
+      function:
+        externalId: icapi_datapoints_extractor
+        concurrencyPolicy: waitForCurrent
+    retries: 3
+    timeout: 3600
+    onFailure: abortWorkflow
+    dependsOn:
+      - externalId: icapi_timeseries_extractor
+
+  #oee
+  - externalId: oee_timeseries
+    type: function
+    parameters:
+      function:
+        externalId: oee_timeseries
+        concurrencyPolicy: waitForCurrent
+    retries: 3
+    timeout: 3600
+    onFailure: abortWorkflow
+    dependsOn:
+      - externalId: icapi_datapoints_extractor
+      
