@@ -1,0 +1,4 @@
+#よくわからないが以下の情報を記述した
+externalId: 'create_asset_hierarchy'
+interval: '50 0 * * *'
+isPaused: false
