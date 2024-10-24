@@ -15,9 +15,9 @@ workflowDefinition:
 
   #convert raw to assets
   - externalId: create_asset_hierarchy
-    type: function
+    type: transformation
     parameters:
-      function:
+      transformation:
         externalId: create_asset_hierarchy
         concurrencyPolicy: waitForCurrent
     retries: 3
@@ -41,9 +41,9 @@ workflowDefinition:
 
   #contextualize asset 
   - externalId: icapi_ts_assets_contextualization
-    type: function
+    type: transformation
     parameters:
-      function:
+      transformation:
         externalId: icapi_ts_assets_contextualization
         concurrencyPolicy: waitForCurrent
     retries: 3
@@ -63,6 +63,7 @@ workflowDefinition:
     timeout: 3600
     onFailure: abortWorkflow
     dependsOn:
+      - externalId: create_asset_hierarchy
       - externalId: icapi_timeseries_extractor
 
   #oee
@@ -77,4 +78,5 @@ workflowDefinition:
     onFailure: abortWorkflow
     dependsOn:
       - externalId: icapi_datapoints_extractor
+      - externalId: icapi_ts_assets_contextualization
       

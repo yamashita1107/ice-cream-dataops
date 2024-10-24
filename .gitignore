@@ -1,3 +1,6 @@
+# exclude venvs
+# ice-cream-dataops/function_local_venvs/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
